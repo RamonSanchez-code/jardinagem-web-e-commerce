@@ -8,8 +8,8 @@ export function StaticHero({ loading = false }: { loading?: boolean }) {
   return (
     <section className="relative flex h-[100svh] min-h-[36rem] items-center overflow-hidden bg-forest">
       <Image
-        src="/img/mansion-fallback.jpg"
-        alt="Mansão com fachada clara e telhado de terracota cercada por jardim tropical com palmeiras, canteiros floridos e caminho de pedra"
+        src="/img/balcony-fallback.jpg"
+        alt="Varanda de apartamento repleta de vasos e plantas tropicais, com porta aberta revelando um interior aconchegante e verde"
         fill
         priority
         className="animate-kenburns object-cover"
