@@ -8,7 +8,7 @@ export function StaticHero({ loading = false }: { loading?: boolean }) {
   return (
     <section className="relative flex h-[100svh] min-h-[36rem] items-center overflow-hidden bg-forest">
       <Image
-        src="/img/balcony-fallback.jpg"
+        src="/img/apartamento-fallback.jpg"
         alt="Varanda de apartamento repleta de vasos e plantas tropicais, com porta aberta revelando um interior aconchegante e verde"
         fill
         priority

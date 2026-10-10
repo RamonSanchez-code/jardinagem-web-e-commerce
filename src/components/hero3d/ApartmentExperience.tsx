@@ -9,12 +9,13 @@ import { StaticHero } from "./StaticHero";
 import { site } from "@/lib/site";
 
 /**
- * Sequência de imagens extraída do GIF enviado pelo cliente (varanda florida
- * que se abre para o interior do apartamento e, ao final, para o jardim).
- * 96 quadros em /public/img/balcony, nomeados frame-000.webp .. frame-095.webp.
+ * Sequência de imagens extraída do GIF enviado pelo cliente: um passeio pelo
+ * apartamento, começando na varanda florida, atravessando a sala e o
+ * corredor, até a vista do jardim ao final.
+ * 96 quadros em /public/img/apartamento, nomeados frame-000.webp .. frame-095.webp.
  */
 const FRAME_COUNT = 96;
-const frameUrl = (i: number) => `/img/balcony/frame-${String(i).padStart(3, "0")}.webp`;
+const frameUrl = (i: number) => `/img/apartamento/frame-${String(i).padStart(3, "0")}.webp`;
 
 type Caption = { a: number; b: number; align: string; node: React.ReactNode };
 
@@ -27,7 +28,7 @@ function prefersReducedMotion() {
   return typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
-export default function BalconyExperience() {
+export default function ApartmentExperience() {
   // Calculado de forma preguiçosa (sem setState em efeito): este componente só
   // é renderizado no cliente via dynamic(..., { ssr: false }), então window já existe.
   const [mode] = useState<"active" | "fallback">(() => (prefersReducedMotion() ? "fallback" : "active"));
@@ -243,7 +244,7 @@ export default function BalconyExperience() {
     <section
       ref={sectionRef}
       className="relative h-[520vh]"
-      aria-label="Apresentação: passeio pela varanda florida e pelo interior verde da Nature Paisagismo"
+      aria-label="Apresentação: passeio por um apartamento tomado de plantas, da varanda florida ao jardim ao fundo"
     >
       <div className="sticky top-0 h-screen overflow-hidden bg-forest">
         {/* Poster enquanto os quadros carregam */}

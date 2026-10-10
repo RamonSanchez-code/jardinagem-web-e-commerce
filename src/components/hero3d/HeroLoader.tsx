@@ -3,11 +3,11 @@
 import dynamic from "next/dynamic";
 import { StaticHero } from "./StaticHero";
 
-const BalconyExperience = dynamic(() => import("./BalconyExperience"), {
+const ApartmentExperience = dynamic(() => import("./ApartmentExperience"), {
   ssr: false,
   loading: () => <StaticHero loading />,
 });
 
 export function HeroLoader() {
-  return <BalconyExperience />;
+  return <ApartmentExperience />;
 }
