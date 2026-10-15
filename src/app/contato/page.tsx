@@ -9,8 +9,6 @@ export const metadata: Metadata = {
   description: "Fale com a Nature Paisagismo — dúvidas sobre plantas, pedidos, serviços e parcerias.",
 };
 
-export const dynamic = "force-dynamic";
-
 export default async function ContatoPage() {
   const services = await getActiveServices();
   return (

@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { getCustomizerData } from "@/lib/queries";
-import { getSession } from "@/lib/auth";
 import { Customizer } from "./Customizer";
 import { Reveal } from "@/components/site/Reveal";
 
@@ -10,15 +9,13 @@ export const metadata: Metadata = {
     "Personalizador 3D: escolha o vaso, os materiais e a planta, visualize sua composição em 3D e receba em casa.",
 };
 
-export const dynamic = "force-dynamic";
-
 export default async function MonteSeuVasoPage({
   searchParams,
 }: {
   searchParams: Promise<{ vaso?: string }>;
 }) {
   const { vaso } = await searchParams;
-  const [data, session] = await Promise.all([getCustomizerData(), getSession()]);
+  const data = await getCustomizerData();
   const initialPotId = vaso ? Number(vaso) || undefined : undefined;
 
   return (
@@ -31,7 +28,7 @@ export default async function MonteSeuVasoPage({
         <p className="mt-3 max-w-2xl text-sm leading-relaxed text-stonegray sm:text-base">
           Em quatro passos simples: escolha o vaso, os materiais e a planta — e veja sua
           criação ganhar forma em 3D. Os preços são calculados a partir dos componentes
-          escolhidos e confirmados no servidor antes do pedido.
+          escolhidos.
         </p>
       </Reveal>
 
@@ -48,14 +45,13 @@ export default async function MonteSeuVasoPage({
           materials={JSON.parse(JSON.stringify(data.materials))}
           plants={JSON.parse(JSON.stringify(data.plants))}
           initialPotId={initialPotId}
-          loggedIn={!!session}
         />
       )}
 
       <Reveal className="mt-14">
         <p className="rounded-2xl bg-sand/50 px-5 py-4 text-center text-xs text-stonegray">
           Os valores exibidos durante a montagem são referências calculadas a partir do catálogo.
-          O carrinho preserva todos os componentes e o total é revalidado no servidor antes do pedido.
+          O carrinho preserva todos os componentes da sua composição.
         </p>
       </Reveal>
     </div>

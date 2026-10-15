@@ -70,8 +70,6 @@ export function Footer() {
                 ["Sobre nós", "/sobre"],
                 ["Serviços", "/servicos"],
                 ["Contato", "/contato"],
-                ["Minha conta", "/conta"],
-                ["Meus pedidos", "/conta?aba=pedidos"],
                 ["Carrinho", "/carrinho"],
               ].map(([label, href]) => (
                 <li key={href}>

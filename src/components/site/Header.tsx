@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Search, ShoppingBag, User, Menu, X, Leaf } from "lucide-react";
+import { Search, ShoppingBag, Menu, X, Leaf } from "lucide-react";
 import { Logo } from "./Logo";
 import { useCart, cartCount } from "@/lib/cart";
 
@@ -93,13 +93,6 @@ export function Header() {
             >
               <Leaf className="h-3.5 w-3.5" />
               Monte seu vaso
-            </Link>
-            <Link
-              href="/conta"
-              className="rounded-full p-2.5 text-cream transition hover:bg-white/10"
-              aria-label="Minha conta"
-            >
-              <User className="h-5 w-5" />
             </Link>
             <Link
               href="/carrinho"

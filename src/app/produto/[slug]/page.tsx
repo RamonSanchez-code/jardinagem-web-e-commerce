@@ -7,8 +7,6 @@ import { categoryName } from "@/lib/site";
 import { ProductCard } from "@/components/site/ProductCard";
 import { ProductDetailClient } from "./ProductDetailClient";
 
-export const dynamic = "force-dynamic";
-
 export async function generateMetadata({
   params,
 }: {

@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { SlidersHorizontal, SearchX, X } from "lucide-react";
-import type { Product } from "@/db/schema";
+import type { Product } from "@/lib/types";
 import { ProductCard } from "@/components/site/ProductCard";
 import { brl } from "@/lib/format";
 

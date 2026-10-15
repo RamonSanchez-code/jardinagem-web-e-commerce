@@ -7,7 +7,7 @@ import {
   Sun, Droplets, Ruler, Home, Leaf, Minus, Plus, Package,
   Truck, ShieldCheck, Sparkles, Check,
 } from "lucide-react";
-import type { Product } from "@/db/schema";
+import type { Product } from "@/lib/types";
 import { AddToCartButton } from "@/components/cart/AddToCartButton";
 import { brl } from "@/lib/format";
 import { categoryName } from "@/lib/site";

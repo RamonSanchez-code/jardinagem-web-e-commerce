@@ -1,20 +1,15 @@
 /**
- * Seed do catálogo — Nature Paisagismo.
- * Dados de demonstração: preços, estoques e textos são fictícios e
- * totalmente editáveis no painel administrativo.
- *
- * Uso: npx tsx src/db/seed.ts
+ * Catálogo estático — Nature Paisagismo.
+ * Dados de demonstração: preços, estoques e textos são fictícios.
+ * Para alterar produtos ou serviços, edite este arquivo.
  */
-import "dotenv/config";
-import { db } from "./index";
-import { products, services, users } from "./schema";
-import { sql } from "drizzle-orm";
-import { hashPassword } from "../lib/auth";
+import type { Product, Service } from "@/lib/types";
 
 const img = (id: number) =>
   `https://images.pexels.com/photos/${id}/pexels-photo-${id}.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940`;
 
-type P = typeof products.$inferInsert;
+type P = Partial<Omit<Product, "id" | "createdAt">> &
+  Pick<Product, "slug" | "name" | "category" | "priceCents">;
 
 const COLORS = {
   terracota: { name: "Terracota", hex: "#b8754f" },
@@ -438,7 +433,7 @@ const catalog: P[] = [
   },
 ];
 
-const serviceList = [
+const serviceList: Omit<Service, "id">[] = [
   {
     slug: "montagem-de-vasos",
     name: "Montagem de vasos e composições",
@@ -495,45 +490,34 @@ const serviceList = [
   },
 ];
 
-async function main() {
-  const [{ n }] = await db.select({ n: sql<number>`count(*)` }).from(products);
-  if (Number(n) > 0) {
-    console.log(`Catálogo já possui ${n} produtos — seed ignorado.`);
-  } else {
-    await db.insert(products).values(catalog);
-    console.log(`✔ ${catalog.length} produtos inseridos.`);
-  }
+const CREATED_AT = new Date("2025-01-01T00:00:00Z");
 
-  const [{ n: ns }] = await db.select({ n: sql<number>`count(*)` }).from(services);
-  if (Number(ns) === 0) {
-    await db.insert(services).values(serviceList);
-    console.log(`✔ ${serviceList.length} serviços inseridos.`);
-  }
+export const products: Product[] = catalog.map((p, i) => ({
+  shortDesc: "",
+  description: "",
+  subcategory: "",
+  compareAtCents: null,
+  image: "",
+  stock: 0,
+  featured: false,
+  bestseller: false,
+  isNew: false,
+  active: true,
+  height: null,
+  light: null,
+  water: null,
+  environment: null,
+  careLevel: null,
+  inCustomizer: false,
+  potStyle: null,
+  potColors: null,
+  sizes: null,
+  materialKind: null,
+  plantModel: null,
+  kitItems: null,
+  ...p,
+  id: i + 1,
+  createdAt: CREATED_AT,
+}));
 
-  const [{ n: nu }] = await db.select({ n: sql<number>`count(*)` }).from(users);
-  if (Number(nu) === 0) {
-    await db.insert(users).values([
-      {
-        name: "Administrador",
-        email: "admin@naturepaisagismo.com",
-        passwordHash: hashPassword("admin123"),
-        role: "admin",
-      },
-      {
-        name: "Cliente Exemplo",
-        email: "cliente@exemplo.com",
-        passwordHash: hashPassword("cliente123"),
-        role: "customer",
-      },
-    ]);
-    console.log("✔ Usuários criados (admin@naturepaisagismo.com / admin123).");
-  }
-
-  console.log("Seed concluído.");
-  process.exit(0);
-}
-
-main().catch((e) => {
-  console.error(e);
-  process.exit(1);
-});
+export const services: Service[] = serviceList.map((s, i) => ({ ...s, id: i + 1 }));

@@ -12,17 +12,24 @@ import { site } from "@/lib/site";
  * Sequência de imagens extraída do GIF enviado pelo cliente: um passeio pelo
  * apartamento, começando na varanda florida, atravessando a sala e o
  * corredor, até a vista do jardim ao final.
- * 96 quadros em /public/img/apartamento, nomeados frame-000.webp .. frame-095.webp.
+ * 78 quadros completos (já recompostos, sem transparência) em /public/img/apartamento,
+ * nomeados frame-000.webp .. frame-077.webp.
  */
-const FRAME_COUNT = 96;
-const frameUrl = (i: number) => `/img/apartamento/frame-${String(i).padStart(3, "0")}.webp`;
+const FRAME_COUNT = 78;
+// Incrementar FRAMES_VERSION sempre que os quadros forem regerados, para invalidar o cache do navegador
+const FRAMES_VERSION = 3;
+const frameUrl = (i: number) =>
+  `/img/apartamento/frame-${String(i).padStart(3, "0")}.webp?v=${FRAMES_VERSION}`;
 
 type Caption = { a: number; b: number; align: string; node: React.ReactNode };
 
 const btn =
   "rounded-full px-7 py-3.5 text-sm font-semibold transition pointer-events-auto";
+// Cartão claro atrás de cada legenda, para leitura sobre qualquer quadro do vídeo
+const card =
+  "rounded-3xl bg-white/90 p-6 shadow-xl shadow-forest/10 ring-1 ring-white/70 backdrop-blur-md sm:p-8";
 const chip =
-  "rounded-full border border-forest/20 bg-white/70 px-3.5 py-1.5 text-xs font-medium text-forest backdrop-blur-sm";
+  "rounded-full border border-forest/20 bg-sand/50 px-3.5 py-1.5 text-xs font-medium text-forest backdrop-blur-sm";
 
 function prefersReducedMotion() {
   return typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -49,8 +56,8 @@ export default function ApartmentExperience() {
     {
       a: 0.0, b: 0.17, align: "items-center justify-start",
       node: (
-        <div className="max-w-xl px-6 sm:px-10 lg:px-20">
-          <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-forest/25 bg-white/60 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.22em] text-forest backdrop-blur-sm">
+        <div className={`mx-4 max-w-xl sm:mx-10 lg:mx-20 ${card}`}>
+          <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-forest/25 bg-sand/50 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.22em] text-forest backdrop-blur-sm">
             <Leaf className="h-3.5 w-3.5" /> {site.fullName}
           </p>
           <h1 className="font-display text-4xl font-semibold leading-[1.06] text-forest sm:text-5xl lg:text-[3.8rem]">
@@ -63,7 +70,7 @@ export default function ApartmentExperience() {
             <Link href="/loja?categoria=plantas" className={`${btn} bg-forest text-cream hover:bg-primary`}>
               Ver plantas
             </Link>
-            <Link href="/monte-seu-vaso" className={`${btn} border border-forest/30 bg-white/60 text-forest backdrop-blur-sm hover:bg-white`}>
+            <Link href="/monte-seu-vaso" className={`${btn} border border-forest/30 bg-white text-forest hover:bg-sand/40`}>
               Monte seu vaso
             </Link>
           </div>
@@ -77,7 +84,7 @@ export default function ApartmentExperience() {
     {
       a: 0.2, b: 0.37, align: "items-start justify-end pt-28 text-right",
       node: (
-        <div className="max-w-md px-6 sm:px-10 lg:px-20">
+        <div className={`mx-4 max-w-md sm:mx-10 lg:mx-20 ${card}`}>
           <h2 className="font-display text-3xl font-semibold leading-tight text-forest sm:text-4xl">
             Cada vaso, uma composição pensada
           </h2>
@@ -91,7 +98,7 @@ export default function ApartmentExperience() {
     {
       a: 0.4, b: 0.58, align: "items-start justify-start pt-28",
       node: (
-        <div className="max-w-lg px-6 sm:px-10 lg:px-20">
+        <div className={`mx-4 max-w-lg sm:mx-10 lg:mx-20 ${card}`}>
           <h2 className="font-display text-3xl font-semibold leading-tight text-forest sm:text-4xl">
             O verde atravessa a porta da sala
           </h2>
@@ -106,7 +113,7 @@ export default function ApartmentExperience() {
     {
       a: 0.62, b: 0.82, align: "items-end justify-start pb-24",
       node: (
-        <div className="max-w-sm px-6 sm:px-10 lg:px-20">
+        <div className={`mx-4 max-w-sm sm:mx-10 lg:mx-20 ${card}`}>
           <h2 className="font-display text-3xl font-semibold leading-tight text-forest sm:text-4xl">
             Ambientes internos tão vivos quanto o jardim
           </h2>
@@ -120,7 +127,7 @@ export default function ApartmentExperience() {
     {
       a: 0.88, b: 1.001, align: "items-end justify-center pb-20 text-center",
       node: (
-        <div className="px-6">
+        <div className={`mx-4 ${card}`}>
           <h2 className="font-display text-3xl font-semibold text-forest sm:text-4xl">
             Leve esse verde para a sua casa
           </h2>
@@ -147,6 +154,9 @@ export default function ApartmentExperience() {
     const dh = img.naturalHeight * scale;
     const dx = (cw - dw) / 2;
     const dy = (ch - dh) / 2;
+    // Interpolação de alta qualidade: os quadros são ampliados para cobrir a tela inteira
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
     ctx.clearRect(0, 0, cw, ch);
     ctx.drawImage(img, dx, dy, dw, dh);
   }, []);
@@ -226,7 +236,7 @@ export default function ApartmentExperience() {
           veilRef.current.style.opacity = String(gsap.utils.clamp(0, 1, (p - 0.94) / 0.06));
         // Zoom sutil acompanhando o scroll, reforçando a sensação de avançar pelo ambiente
         if (zoomRef.current)
-          zoomRef.current.style.transform = `scale(${1 + p * 0.14})`;
+          zoomRef.current.style.transform = `scale(${1 + p * 0.05})`;
       },
     });
 

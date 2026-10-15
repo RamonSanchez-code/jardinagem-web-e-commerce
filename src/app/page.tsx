@@ -12,8 +12,6 @@ import { getBenefits, getProducts, getNewArrivals, getActiveServices } from "@/l
 import { categories, site } from "@/lib/site";
 import { brl } from "@/lib/format";
 
-export const dynamic = "force-dynamic";
-
 const BENEFIT_ICONS: Record<string, React.ReactNode> = {
   truck: <Truck className="h-5 w-5" />,
   leaf: <Leaf className="h-5 w-5" />,

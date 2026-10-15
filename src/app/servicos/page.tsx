@@ -10,8 +10,6 @@ export const metadata: Metadata = {
   description: "Montagem de vasos e kits, entrega programada, manutenção de jardins e consultoria de paisagismo.",
 };
 
-export const dynamic = "force-dynamic";
-
 export default async function ServicosPage({
   searchParams,
 }: {

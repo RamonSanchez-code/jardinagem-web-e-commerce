@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ShoppingBag, Check, Sun, Droplets, Ruler } from "lucide-react";
-import type { Product } from "@/db/schema";
+import type { Product } from "@/lib/types";
 import { brl } from "@/lib/format";
 import { useCart } from "@/lib/cart";
 

@@ -1,33 +1,26 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Truck, Store, User, MapPin, CreditCard, CircleAlert, FlaskConical, ArrowLeft } from "lucide-react";
-import { useCart, cartSubtotal, cartCount } from "@/lib/cart";
-import { brl } from "@/lib/format";
-import { placeOrderAction, type CheckoutInput } from "@/lib/actions";
-import type { DeliverySettings } from "@/db/schema";
+import { useCart, useLastOrder, cartSubtotal, cartCount } from "@/lib/cart";
+import { brl, generateOrderCode } from "@/lib/format";
+import type { DeliverySettings } from "@/lib/types";
 
 const inputCls =
   "w-full rounded-xl border border-sand-dark bg-white px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15";
 
-export function CheckoutClient({
-  delivery,
-  defaultCustomer,
-}: {
-  delivery: DeliverySettings;
-  defaultCustomer?: { name: string; email: string };
-}) {
+export function CheckoutClient({ delivery }: { delivery: DeliverySettings }) {
   const router = useRouter();
   const { items, clear } = useCart();
+  const setOrder = useLastOrder((s) => s.setOrder);
   const [mounted, setMounted] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [pending, startTransition] = useTransition();
 
-  const [name, setName] = useState(defaultCustomer?.name ?? "");
-  const [email, setEmail] = useState(defaultCustomer?.email ?? "");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [mode, setMode] = useState<"entrega" | "retirada">("entrega");
   const [addr, setAddr] = useState({ cep: "", rua: "", numero: "", complemento: "", bairro: "", cidade: "", uf: "" });
@@ -39,26 +32,33 @@ export function CheckoutClient({
 
   const submit = () => {
     setError(null);
-    const input: CheckoutInput = {
-      customer: { name: name.trim(), email: email.trim(), phone: phone.trim() },
+    const customer = { name: name.trim(), email: email.trim(), phone: phone.trim() };
+    if (!customer.name || !customer.email.includes("@") || !customer.phone)
+      return setError("Preencha seus dados de contato.");
+    if (mode === "entrega" && (!addr.cep || !addr.rua || !addr.numero || !addr.bairro || !addr.cidade || !addr.uf))
+      return setError("Preencha o endereço de entrega completo.");
+
+    const code = generateOrderCode();
+    setOrder({
+      code,
+      customer,
+      address: mode === "entrega" ? addr : null,
       delivery: mode,
-      address: mode === "entrega" ? addr : undefined,
-      items: items.map((i) =>
-        i.kind === "produto"
-          ? { kind: "produto", productId: i.productId, qty: i.qty }
-          : { kind: "personalizado", qty: i.qty, custom: i.custom }
-      ),
-      paymentMethod: "demo",
-    };
-    startTransition(async () => {
-      const res = await placeOrderAction(input);
-      if (res.ok) {
-        clear();
-        router.push(`/pedido/${res.code}`);
-      } else {
-        setError(res.error);
-      }
+      items: items.map((i) => ({
+        kind: i.kind,
+        productId: i.productId,
+        name: i.name,
+        image: i.image,
+        unitPriceCents: i.unitPriceCents,
+        qty: i.qty,
+        lines: i.lines,
+      })),
+      subtotalCents: subtotal,
+      shippingCents: shipping,
+      totalCents: total,
     });
+    clear();
+    router.push(`/pedido/${code}`);
   };
 
   if (!mounted) {
@@ -186,8 +186,8 @@ export function CheckoutClient({
               <p className="font-bold text-terracotta-dark">Modo de demonstração</p>
               <p className="mt-1 text-xs leading-relaxed text-ink/70">
                 Nenhum provedor de pagamento está conectado neste ambiente. Ao confirmar,
-                o pedido é registrado com status de pagamento <strong>“demonstração aprovada”</strong> —
-                sem cobrança real. Para produção, integre um gateway (Stripe, Mercado Pago, etc.)
+                o pedido é confirmado como <strong>“demonstração aprovada”</strong> —
+                sem cobrança real e sem registro em servidor. Para produção, integre um gateway (Stripe, Mercado Pago, etc.)
                 com as credenciais no servidor.
               </p>
             </div>
@@ -236,10 +236,9 @@ export function CheckoutClient({
 
         <button
           onClick={submit}
-          disabled={pending}
           className="mt-6 w-full rounded-full bg-primary py-4 text-sm font-semibold text-white transition hover:bg-forest disabled:opacity-60"
         >
-          {pending ? "Registrando pedido..." : `Confirmar pedido — ${brl(total)}`}
+          Confirmar pedido — {brl(total)}
         </button>
         <Link href="/carrinho" className="mt-3 block text-center text-sm font-semibold text-forest underline-offset-4 hover:underline">
           Voltar ao carrinho

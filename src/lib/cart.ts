@@ -1,8 +1,8 @@
 "use client";
 
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
-import type { CustomConfig } from "@/db/schema";
+import { persist, createJSONStorage } from "zustand/middleware";
+import type { CustomConfig, Order } from "@/lib/types";
 
 export type CartItem = {
   id: string;
@@ -73,3 +73,17 @@ export const cartCount = (items: CartItem[]) =>
 
 export const cartSubtotal = (items: CartItem[]) =>
   items.reduce((acc, i) => acc + i.qty * i.unitPriceCents, 0);
+
+/** Último pedido confirmado — guardado só nesta aba para a página de confirmação */
+export const useLastOrder = create<{
+  order: Order | null;
+  setOrder: (order: Order) => void;
+}>()(
+  persist(
+    (set) => ({
+      order: null,
+      setOrder: (order) => set({ order }),
+    }),
+    { name: "np-last-order", storage: createJSONStorage(() => sessionStorage) }
+  )
+);

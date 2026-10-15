@@ -12,14 +12,3 @@ export function generateOrderCode(): string {
   const n = Math.floor(Math.random() * 900000) + 100000;
   return `NP-${n}`;
 }
-
-export const size = {
-  slugify(text: string) {
-    return text
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/[̀-ͯ]/g, "")
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)/g, "");
-  },
-};

@@ -3,7 +3,6 @@ import { CartClient } from "./CartClient";
 import { getDeliverySettings } from "@/lib/queries";
 
 export const metadata: Metadata = { title: "Carrinho" };
-export const dynamic = "force-dynamic";
 
 export default async function CarrinhoPage() {
   const delivery = await getDeliverySettings();

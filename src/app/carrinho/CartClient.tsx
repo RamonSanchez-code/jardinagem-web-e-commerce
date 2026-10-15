@@ -6,7 +6,7 @@ import Image from "next/image";
 import { Minus, Plus, Trash2, ShoppingBag, Truck, Store, ArrowRight } from "lucide-react";
 import { useCart, cartSubtotal } from "@/lib/cart";
 import { brl } from "@/lib/format";
-import type { DeliverySettings } from "@/db/schema";
+import type { DeliverySettings } from "@/lib/types";
 
 export function CartClient({ delivery }: { delivery: DeliverySettings }) {
   const { items, setQty, remove } = useCart();
